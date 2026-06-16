@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# uv
+# (uv.lock IS committed)
+
+# Test / cache
+.pytest_cache/
+.ruff_cache/
+
+# Local datasets (golden corpora may be committed; large fetched corpora are not)
+data/corpora/

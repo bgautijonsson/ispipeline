@@ -1,0 +1,36 @@
+[project]
+name = "ispipeline"
+version = "0.1.0"
+description = "Shared Icelandic text-correction pipeline for the Metill estate (esbvaktin, althingi, frettasafn)."
+readme = "README.md"
+requires-python = ">=3.11"
+# Core package is importable with NO third-party deps — every layer degrades
+# gracefully (try/except ImportError) so tests and lightweight callers run
+# without the heavy Icelandic NLP stack. Install the `icelandic` extra to
+# activate GreynirCorrect / Icegrams / BÍN.
+dependencies = []
+
+[project.optional-dependencies]
+icelandic = [
+    "reynir-correct>=4.0,<5",
+    "icegrams>=1.1",
+    "islenska>=1.0",
+    "reynir>=3.0",
+]
+
+[project.scripts]
+ispipeline = "ispipeline.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ispipeline"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
