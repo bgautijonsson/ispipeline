@@ -16,6 +16,7 @@ icelandic = [
     "icegrams>=1.1",
     "islenska>=1.0",
     "reynir>=3.0",
+    "httpx>=0.27",
 ]
 
 [project.scripts]
