@@ -21,6 +21,7 @@ icelandic = [
 
 [project.scripts]
 ispipeline = "ispipeline.cli:main"
+ispipeline-check-pins = "ispipeline.check_pins:main"
 
 [dependency-groups]
 dev = ["pytest>=8"]
