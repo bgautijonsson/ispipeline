@@ -23,6 +23,7 @@ icelandic = [
 ispipeline = "ispipeline.cli:main"
 ispipeline-check-pins = "ispipeline.check_pins:main"
 ispipeline-estate-health = "ispipeline.estate_health:main"
+ispipeline-estate-health-nightly = "ispipeline.nightly:main"
 
 [dependency-groups]
 dev = ["pytest>=8"]

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>is.metill.estate-health</string>
+
+	<!-- Nightly Metill estate-health monitor (pin-drift guard + each repo's
+	     health script). Wrapped in `timeout -k 60 600` so a hung per-repo health
+	     script can never wedge launchd in state=running. The runner ALWAYS
+	     appends to the Obsidian log note; it sends a macOS notification ONLY on a
+	     FAIL or a newly-stale source (chronic advocacy-feed staleness never nags).
+
+	     Install:  cp this file to ~/Library/LaunchAgents/ then
+	               launchctl load ~/Library/LaunchAgents/is.metill.estate-health.plist
+	     Run now:  launchctl start is.metill.estate-health -->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/opt/homebrew/bin/timeout</string>
+		<string>-k</string>
+		<string>60</string>
+		<string>600</string>
+		<string>/Users/brynjolfurjonsson/.local/bin/uv</string>
+		<string>run</string>
+		<string>ispipeline-estate-health-nightly</string>
+	</array>
+
+	<key>WorkingDirectory</key>
+	<string>/Users/brynjolfurjonsson/ispipeline</string>
+
+	<!-- launchd gives jobs a minimal PATH; the monitor shells out to bare `uv`
+	     for each repo's health check, so it must find uv + homebrew here. -->
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/Users/brynjolfurjonsson/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>8</integer>
+		<key>Minute</key>
+		<integer>0</integer>
+	</dict>
+
+	<key>StandardOutPath</key>
+	<string>/Users/brynjolfurjonsson/ispipeline/data/logs/estate-health-nightly.stdout.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/brynjolfurjonsson/ispipeline/data/logs/estate-health-nightly.stderr.log</string>
+</dict>
+</plist>

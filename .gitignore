@@ -16,3 +16,6 @@ build/
 
 # Local datasets (golden corpora may be committed; large fetched corpora are not)
 data/corpora/
+
+# launchd job logs (estate-health-nightly)
+data/logs/
