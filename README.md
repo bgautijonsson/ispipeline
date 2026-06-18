@@ -72,7 +72,28 @@ Consumers keep their own `eval/baseline.json` and iseval CI job. Adopting or
 bumping `ispipeline` requires re-running the gate and re-baselining in the same
 PR if a number legitimately moves. See each consumer's CLAUDE.md § "Eval gate".
 
+## Estate ops tools
+
+This repo also hosts two cross-repo estate tools (pure stdlib):
+
+```bash
+# Pin-drift guard — assert every consumer pins the same ref for each shared
+# package (ispipeline + isretrieval). Catches a silent re-fork.
+ispipeline-check-pins                 # all packages, all consumers
+ispipeline-check-pins --package isretrieval
+
+# Estate health monitor (on-demand) — pin guard + each repo's health script,
+# aggregated to one PASS/WARN/FAIL report.
+ispipeline-estate-health              # full report
+ispipeline-estate-health --quiet      # only WARN/FAIL
+```
+
+`src/ispipeline/check_pins.py` carries the `PACKAGE_CONSUMERS` registry (which
+repo pins which package, and where). The intended future home of these is a
+nightly estate health-monitor workflow.
+
 ## Status
 
-`v0.1.0` — extraction in progress. See
+`v0.1.3` — corrections extraction shipped + adopted by esbvaktin & althingi;
+estate pin guard + on-demand health monitor added. See
 `docs/plans/2026-06-16-ispipeline-extraction.md`.
