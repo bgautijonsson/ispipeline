@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from ispipeline.check_pins import check_pins, find_pin
+from ispipeline.check_pins import PACKAGE_CONSUMERS, check_pins, find_pin
 
 PIN = "ispipeline @ git+https://github.com/bgautijonsson/ispipeline.git@v0.1.0"
+ISRET = "isretrieval @ git+https://github.com/bgautijonsson/isretrieval.git@v0.2.0"
 
 
 def _write(tmp_path, name, body):
@@ -85,3 +86,37 @@ def test_missing_file_fails(tmp_path):
     code, pins = check_pins({"a": a, "missing": str(tmp_path / "nope.toml")})
     assert code == 1
     assert pins["missing"] is None
+
+
+# ── package-aware (multi-package) behaviour ──
+
+def test_find_pin_for_named_package():
+    assert find_pin(f'deps = ["{ISRET}"]', package="isretrieval") == "v0.2.0"
+    body = '[tool.uv.sources]\nisretrieval = { git = "x", tag = "v0.3.0" }\n'
+    assert find_pin(body, package="isretrieval") == "v0.3.0"
+
+
+def test_find_pin_does_not_cross_match_packages():
+    # esbvaktin's real situation: pins BOTH packages in one file.
+    both = f'deps = ["{PIN}", "{ISRET}"]'
+    assert find_pin(both, "ispipeline") == "v0.1.0"
+    assert find_pin(both, "isretrieval") == "v0.2.0"
+
+
+def test_find_pin_missing_named_package_returns_none():
+    # althingi-content pins ispipeline but not isretrieval
+    assert find_pin(f'deps = ["{PIN}"]', package="isretrieval") is None
+
+
+def test_check_pins_respects_package(tmp_path):
+    a = _write(tmp_path, "a.toml", f'deps = ["{ISRET}"]')
+    b = _write(tmp_path, "b.toml", f'deps = ["{ISRET}"]')
+    code, pins = check_pins({"a": a, "b": b}, package="isretrieval")
+    assert code == 0
+    assert pins == {"a": "v0.2.0", "b": "v0.2.0"}
+
+
+def test_registry_covers_both_packages():
+    assert set(PACKAGE_CONSUMERS) == {"ispipeline", "isretrieval"}
+    assert "frettasafn" in PACKAGE_CONSUMERS["isretrieval"]
+    assert "althingi-mcp" in PACKAGE_CONSUMERS["isretrieval"]
